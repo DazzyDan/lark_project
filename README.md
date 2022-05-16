@@ -1,4 +1,8 @@
 # lark_project
+https://lark-parser.readthedocs.io/en/latest/how_to_use.html
+https://github.com/lark-parser/lark
+https://www.programcreek.com/python/example/115231/lark.Lark
+
 python3 -m pip install lark-parser
 
 1. Writing the grammar
