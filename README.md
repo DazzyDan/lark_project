@@ -1,3 +1,5 @@
+python3 -m venv env .
+
 # lark_project
 https://lark-parser.readthedocs.io/en/latest/how_to_use.html
 https://github.com/lark-parser/lark
