@@ -1,6 +1,6 @@
 from urllib import response
 import requests
-from lark import Lark
+from lark import Lark, Transformer
 
 class ParseDoc:
     def __init__(self) -> None:
@@ -20,13 +20,17 @@ class ParseDoc:
         lark_text = r"""
         start : value
         value : _NL? row+ seperator summary
-        row : IP_1 + _WHITESPACE + IP_2 + MAP + _NL
+                |ip_1
+                |ip_2
+                |map
+
+        row : ip_1 + _WHITESPACE + ip_2 + map + _NL
         NAME : /[\u4e00-\u9fa5]/
         WORD: NAME*/\w/*NAME*/\w/*/\./*/\w/*/\./*/\(/*NAME*/\)/*NAME*/\w/*NAME*
         LOCATION: _WHITESPACE + WORD
-        MAP : LOCATION+
-        IP_1 : /([0-9]{1,3}\.*){4}/
-        IP_2 : /([0-9]{1,3}\.*){4}/
+        map : LOCATION+
+        ip_1 : /([0-9]{1,3}\.*){4}/
+        ip_2 : /([0-9]{1,3}\.*){4}/
         HYPER : /\-/+
 
         seperator : HYPER + _NL
@@ -45,13 +49,14 @@ class ParseDoc:
         %import common.NEWLINE -> _NL
         %import common.WS_INLINE -> _WHITESPACE
         %import common.WS
+
+        %ignore WS
+        %ignore _WHITESPACE
         
         """
         return lark_text
 
-    def transformDoc(self):
-        pass
-
+    
     def parseDoc(self):
         docText = self.readDoc()
         print(docText)
@@ -59,13 +64,21 @@ class ParseDoc:
         parser = Lark(lark_doc, start = "value")
         print("Start parsing ... ")
         result = parser.parse(docText)
-        print(result)
+        print(result.pretty())
         print("Start transforming ... ")
 
-        transformer = self.transformDoc()
-        finalText = transformer.transform(result)
+        transformer = TransformTree().transform(result)
+        # finalText = transformer.transform(result)
 
-        print(finalText)
+        print(transformer)
+
+class TransformTree(Transformer):
+    def row(self,rows):
+        # [row1 : dict{IP_1:_ip1, IP_2:_ip2, Map: _map}, row2, ...]
+        l2 = list(rows)
+        return {"ip1" : l2[0], "ip2": l2[1], "loc": l2[2]}
+        
+    
 
 if __name__ == '__main__':
     par = ParseDoc()
