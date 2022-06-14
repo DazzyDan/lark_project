@@ -76,6 +76,7 @@ class TransformTree(Transformer):
     def row(self,rows):
         # [row1 : dict{IP_1:_ip1, IP_2:_ip2, Map: _map}, row2, ...]
         l2 = list(rows)
+        
         return {"ip1" : l2[0], "ip2": l2[1], "loc": l2[2]}
         
     
